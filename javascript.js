@@ -1,5 +1,4 @@
 function refine(rids) {
-    alert("out of range filter on: " + rids);
     let solid = []
     for (let x = 0; x < rids.length; x++) {
         if ((10 < rids[x]) && (rids[x] % 10 != 0) && (rids[x] % 10 != 9) && (rids[x] < 89)) {
@@ -9,46 +8,64 @@ function refine(rids) {
     return solid
 }
 
-function valid(id, curr) {
-    // alert("valid");
+function kill(id, curr) {
     let limit = eval("document.getElementById(" + id + ")");
     let current = eval("document.getElementById(" + curr + ")");
     limitcolor = limit.getAttribute("value");
     currentcolor = current.getAttribute("value");
-    // alert(id, curr)
-    color = limitcolor.charAt(0);
-    if (limitcolor == "none") return true;
-    else if (limitcolor == currentcolor) return false;
-    // else if (limitcolor != currentcolor) return true;
+    colordest = limitcolor.charAt(0);
+    colorcurr = currentcolor.charAt(0);
+    if (colordest == 'n') return false;
+    else if (colordest != colorcurr) return true;
+    else return false;
 }
+
+function valid(id, curr) {
+    let limit = eval("document.getElementById(" + id + ")");
+    let current = eval("document.getElementById(" + curr + ")");
+    limitcolor = limit.getAttribute("value");
+    currentcolor = current.getAttribute("value");
+    colordest = limitcolor.charAt(0);
+    colorcurr = currentcolor.charAt(0);
+    if (colordest == "n") return true;
+
+    else if (colordest == colorcurr) return false;
+}
+
 
 function knightmove(current) {
     var curr = parseInt(current);
+    var allnext = [12, 8, 21, 19];
+    var nid = [];
     var nextid = [];
-    nextid.push(curr + 12);
-    nextid.push(curr + 8);
-    nextid.push(curr + 21);
-    nextid.push(curr + 19);
-    nextid.push(curr - 12);
-    nextid.push(curr - 8);
-    nextid.push(curr - 21);
-    nextid.push(curr - 19);
-    nextid = refine(nextid);
+    for (let index = 0; index < allnext.length; index++) {
+        nid.push(curr + allnext[index]);
+    }
+    for (let index = 0; index < allnext.length; index++) {
+        nid.push(curr - allnext[index]);
+    }
+    nid = refine(nid);
+    for (let index = 0; index < nid.length; index++) {
+        if (valid(nid[index], curr) || kill(nid[index], curr)) { nextid.push(nid[index]); }
+    }
     return nextid
 }
 
 function kingmove(current) {
     var curr = parseInt(current);
+    var allnext = [1, 10, 11, 9];
+    var nid = [];
     var nextid = [];
-    nextid.push(curr + 1);
-    nextid.push(curr - 1);
-    nextid.push(curr + 10);
-    nextid.push(curr - 10);
-    nextid.push(curr + 11);
-    nextid.push(curr + 9);
-    nextid.push(curr - 11);
-    nextid.push(curr - 9);
-    nextid = refine(nextid);
+    for (let index = 0; index < allnext.length; index++) {
+        nid.push(curr + allnext[index]);
+    }
+    for (let index = 0; index < allnext.length; index++) {
+        nid.push(curr - allnext[index]);
+    }
+    nid = refine(nid);
+    for (let index = 0; index < nid.length; index++) {
+        if (valid(nid[index], curr) || kill(nid[index], curr)) { nextid.push(nid[index]); }
+    }
     return nextid
 }
 
@@ -59,24 +76,28 @@ function queenmove(current) {
     var ya = (parseInt(curr / 10)) * 10;
     var temp = curr + 10;
     while (temp < 89) {
+        if (kill(temp, curr)) nextid.push(temp);
         if (valid(temp, curr)) nextid.push(temp);
         else break;
         temp = temp + 10;
     }
     var temp = curr - 10;
     while (temp > 10) {
+        if (kill(temp, curr)) nextid.push(temp);
         if (valid(temp, curr)) nextid.push(temp);
         else break;
         temp = temp - 10;
     }
     var temp = curr - 1;
     while (temp > ya) {
+        if (kill(temp, curr)) nextid.push(temp);
         if (valid(temp, curr)) nextid.push(temp);
         else break;
         temp = temp - 1;
     }
     var temp = curr + 1;
     while (temp < (ya + 9)) {
+        if (kill(temp, curr)) nextid.push(temp);
         if (valid(temp, curr)) nextid.push(temp);
         else break;
         temp = temp + 1;
@@ -89,6 +110,7 @@ function bishopmove(current) {
     var nextid = [];
     var temp = curr + 9;
     while ((10 < temp) && (temp % 10 != 0) && (temp % 10 != 9) && (temp < 89)) {
+        if (kill(temp, curr)) nextid.push(temp);
         if (valid(temp, curr)) nextid.push(temp);
         else break;
         temp = temp + 9;
@@ -96,6 +118,7 @@ function bishopmove(current) {
 
     var temp = curr + 11;
     while ((temp % 10 != 0) && (temp % 10 != 9) && (temp < 89)) {
+        if (kill(temp, curr)) nextid.push(temp);
         if (valid(temp, curr)) nextid.push(temp);
         else break;
         temp = temp + 11;
@@ -103,6 +126,7 @@ function bishopmove(current) {
 
     var temp = curr - 9;
     while ((10 < temp) && (temp % 10 != 0) && (temp % 10 != 9)) {
+        if (kill(temp, curr)) nextid.push(temp);
         if (valid(temp, curr)) nextid.push(temp);
         else break;
         temp = temp - 9;
@@ -110,6 +134,7 @@ function bishopmove(current) {
 
     var temp = curr - 11;
     while ((10 < temp) && (temp % 10 != 0) && (temp % 10 != 9)) {
+        if (kill(temp, curr)) nextid.push(temp);
         if (valid(temp, curr)) nextid.push(temp);
         else break;
         temp = temp - 11;
@@ -124,24 +149,28 @@ function rookmove(current) {
     var ya = (parseInt(curr / 10)) * 10;
     var temp = curr + 10;
     while (temp < 89) {
+        if (kill(temp, curr)) nextid.push(temp);
         if (valid(temp, curr)) nextid.push(temp);
         else break;
         temp = temp + 10;
     }
     var temp = curr - 10;
     while (temp > 10) {
+        if (kill(temp, curr)) nextid.push(temp);
         if (valid(temp, curr)) nextid.push(temp);
         else break;
         temp = temp - 10;
     }
     var temp = curr - 1;
     while (temp > ya) {
+        if (kill(temp, curr)) nextid.push(temp);
         if (valid(temp, curr)) nextid.push(temp);
         else break;
         temp = temp - 1;
     }
     var temp = curr + 1;
     while (temp < (ya + 9)) {
+        if (kill(temp, curr)) nextid.push(temp);
         if (valid(temp, curr)) nextid.push(temp);
         else break;
         temp = temp + 1;
@@ -152,27 +181,30 @@ function rookmove(current) {
 function wpawnmove(current) {
     var curr = parseInt(current);
     var nextid = [];
-    if (valid(curr + 10, curr))
-        nextid.push(curr + 10);
-    if (parseInt(curr / 10) == 2 && valid(curr + 20, curr))
-        nextid.push(curr + 20);
+    if (valid(curr + 10, curr)) nextid.push(curr + 10);
+    if (parseInt(curr / 10) == 2 && (valid(curr + 20, curr))) nextid.push(curr + 20);
+    if (kill((curr + 11), curr) && (10 < (curr + 11)) && ((curr + 11) % 10 != 0) && ((curr + 11) % 10 != 9) && ((curr + 11) < 89)) nextid.push(curr + 11);
+    if (kill((curr + 9), curr) && (10 < (curr + 9)) && ((curr + 9) % 10 != 0) && ((curr + 9) % 10 != 9) && ((curr + 9) < 89)) nextid.push(curr + 9);
     return nextid
 }
+
 
 function bpawnmove(current) {
     var curr = parseInt(current);
     var nextid = [];
     if (valid(curr - 10, curr)) nextid.push(curr - 10);
-    if (parseInt(curr / 10) == 7 && valid(curr - 20, curr)) nextid.push(curr - 20);
+    if (parseInt(curr / 10) == 7 && (valid(curr - 20, curr))) nextid.push(curr - 20);
+    if (kill((curr - 11), curr) && (10 < (curr - 11)) && ((curr - 11) % 10 != 0) && ((curr - 11) % 10 != 9) && ((curr - 11) < 89)) nextid.push(curr - 11);
+    if (kill((curr - 9), curr) && (10 < (curr - 9)) && ((curr - 9) % 10 != 0) && ((curr - 9) % 10 != 9) && ((curr - 9) < 89)) nextid.push(curr - 9);
     return nextid
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-var step = "black";
+var step = "white";
 var type = "none";
 var ID = 0;
 var allowedboxes = [];
+var moved = false;
 var blocks = document.querySelectorAll(".blocks li button");
-// alert(blocks.length);
 for (let index = 0; index < blocks.length; index++) {
     blocks[index].addEventListener("click", function() {
         switch (step) {
@@ -206,6 +238,7 @@ for (let index = 0; index < blocks.length; index++) {
                         allowedboxes.push(box);
                         box.classList.add("highlight");
                     }
+                    moved = false;
                 }
                 break;
             case "wmove":
@@ -219,7 +252,8 @@ for (let index = 0; index < blocks.length; index++) {
                             let old = eval("document.getElementById(" + ID + ")");
                             old.setAttribute("value", "none");
                             step = "black";
-                        }
+                            moved = true;
+                        } else if (!moved) step = "white";
                     }
                 }
                 break;
@@ -252,6 +286,7 @@ for (let index = 0; index < blocks.length; index++) {
                         let box = eval("document.getElementById(" + allowedmoves[index] + ")");
                         allowedboxes.push(box);
                         box.classList.add("highlight");
+                        moved = false;
                     }
                 }
                 break;
@@ -266,12 +301,12 @@ for (let index = 0; index < blocks.length; index++) {
                             let old = eval("document.getElementById(" + ID + ")");
                             old.setAttribute("value", "none");
                             step = "white";
-                        }
+                            moved = true;
+                        } else if (!moved) step = "black";
+
                     }
                 }
                 break;
-                // default:
-                //     break;
         }
 
     })
@@ -412,4 +447,4 @@ for (let index = 0; index < blocks.length; index++) {
 //         }
 
 //     }
-// }
+// }))
