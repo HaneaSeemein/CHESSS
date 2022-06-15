@@ -56,16 +56,15 @@ function kingmove(current) {
     var allnext = [1, 10, 11, 9];
     var nid = [];
     var nextid = [];
-    for (let index = 0; index < allnext.length; index++) {
-        nid.push(curr + allnext[index]);
-    }
-    for (let index = 0; index < allnext.length; index++) {
-        nid.push(curr - allnext[index]);
-    }
+    for (let index = 0; index < allnext.length; index++) nid.push(curr + allnext[index]);
+
+    for (let index = 0; index < allnext.length; index++) nid.push(curr - allnext[index]);
     nid = refine(nid);
-    for (let index = 0; index < nid.length; index++) {
-        if (valid(nid[index], curr) || kill(nid[index], curr)) { nextid.push(nid[index]); }
-    }
+
+    for (let index = 0; index < nid.length; index++)
+        if (valid(nid[index], curr) || kill(nid[index], curr)) nextid.push(nid[index]);
+
+
     return nextid
 }
 
@@ -183,8 +182,10 @@ function wpawnmove(current) {
     var nextid = [];
     if (valid(curr + 10, curr)) nextid.push(curr + 10);
     if (parseInt(curr / 10) == 2 && (valid(curr + 20, curr))) nextid.push(curr + 20);
-    if (kill((curr + 11), curr) && (10 < (curr + 11)) && ((curr + 11) % 10 != 0) && ((curr + 11) % 10 != 9) && ((curr + 11) < 89)) nextid.push(curr + 11);
-    if (kill((curr + 9), curr) && (10 < (curr + 9)) && ((curr + 9) % 10 != 0) && ((curr + 9) % 10 != 9) && ((curr + 9) < 89)) nextid.push(curr + 9);
+    if ((10 < (curr + 11)) && ((curr + 11) % 10 != 0) && ((curr + 11) % 10 != 9) && ((curr + 11) < 89))
+        if (kill((curr + 11), curr)) nextid.push(curr + 11);
+    if ((10 < (curr + 9)) && ((curr + 9) % 10 != 0) && ((curr + 9) % 10 != 9) && ((curr + 9) < 89))
+        if (kill((curr + 9), curr)) nextid.push(curr + 9);
     return nextid
 }
 
@@ -194,8 +195,10 @@ function bpawnmove(current) {
     var nextid = [];
     if (valid(curr - 10, curr)) nextid.push(curr - 10);
     if (parseInt(curr / 10) == 7 && (valid(curr - 20, curr))) nextid.push(curr - 20);
-    if (kill((curr - 11), curr) && (10 < (curr - 11)) && ((curr - 11) % 10 != 0) && ((curr - 11) % 10 != 9) && ((curr - 11) < 89)) nextid.push(curr - 11);
-    if (kill((curr - 9), curr) && (10 < (curr - 9)) && ((curr - 9) % 10 != 0) && ((curr - 9) % 10 != 9) && ((curr - 9) < 89)) nextid.push(curr - 9);
+    if ((10 < (curr - 11)) && ((curr - 11) % 10 != 0) && ((curr - 11) % 10 != 9) && ((curr - 11) < 89))
+        if (kill((curr - 11), curr)) nextid.push(curr - 11);
+    if ((10 < (curr - 9)) && ((curr - 9) % 10 != 0) && ((curr - 9) % 10 != 9) && ((curr - 9) < 89))
+        if (kill((curr - 9), curr)) nextid.push(curr - 9);
     return nextid
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -261,7 +264,7 @@ for (let index = 0; index < blocks.length; index++) {
                 {
                     type = this.getAttribute("value");
                     ID = this.getAttribute("id");
-                    let allowedmoves = [];
+                    allowedmoves = [];
                     allowedboxes = [];
                     if (type === "bpawn") {
                         step = "bmove";
