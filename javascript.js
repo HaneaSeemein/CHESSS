@@ -59,13 +59,12 @@ function kingmove(current) {
     var nid = [];
     var nextid = [];
     for (let index = 0; index < allnext.length; index++) nid.push(curr + allnext[index]);
-
     for (let index = 0; index < allnext.length; index++) nid.push(curr - allnext[index]);
+
     nid = refine(nid);
 
     for (let index = 0; index < nid.length; index++)
         if (valid(nid[index], curr) || kill(nid[index], curr)) nextid.push(nid[index]);
-
 
     return nextid
 }
@@ -202,6 +201,37 @@ function bpawnmove(current) {
     if ((10 < (curr - 9)) && ((curr - 9) % 10 != 0) && ((curr - 9) % 10 != 9) && ((curr - 9) < 89))
         if (kill((curr - 9), curr)) nextid.push(curr - 9);
     return nextid
+}
+
+function wkingcheck() {
+    let king = document.querySelector(button[value = "wking"]);
+    let kingsplace = king.getAttribute("id");
+    let path = queenmove(kingsplace);
+    for (let x = 0; x < path.length; x++) {
+        let danger = eval("document.getElementById(" + path[x] + ")");
+        if (danger.getAttribute("value") == "bqueen") return false;
+    }
+
+    path = bishopmove(kingsplace);
+    for (let x = 0; x < path.length; x++) {
+        let danger = eval("document.getElementById(" + path[x] + ")");
+        if (danger.getAttribute("value") == "bbishop") return false;
+    }
+    path = rookmove(kingsplace);
+    for (let x = 0; x < path.length; x++) {
+        let danger = eval("document.getElementById(" + path[x] + ")");
+        if (danger.getAttribute("value") == "brook") return false;
+    }
+    path = knightmove(kingsplace);
+    for (let x = 0; x < path.length; x++) {
+        let danger = eval("document.getElementById(" + path[x] + ")");
+        if (danger.getAttribute("value") == "bknight") return false;
+    }
+    path = [parseInt(kingsplace) - 9, parseInt(kingsplace) - 11];
+    for (let x = 0; x < path.length; x++) {
+        let danger = eval("document.getElementById(" + path[x] + ")");
+        if (danger.getAttribute("value") == "bpawn") return false;
+    }
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var step = "white";
