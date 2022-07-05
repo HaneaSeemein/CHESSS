@@ -209,29 +209,60 @@ function wkingcheck() {
     let path = queenmove(kingsplace);
     for (let x = 0; x < path.length; x++) {
         let danger = eval("document.getElementById(" + path[x] + ")");
-        if (danger.getAttribute("value") == "bqueen") return false;
+        if (danger.getAttribute("value") == "bqueen") return path.slice(0,x);
     }
-
     path = bishopmove(kingsplace);
     for (let x = 0; x < path.length; x++) {
         let danger = eval("document.getElementById(" + path[x] + ")");
-        if (danger.getAttribute("value") == "bbishop") return false;
+        if (danger.getAttribute("value") == "bbishop") return path.slice(0,x);
     }
     path = rookmove(kingsplace);
     for (let x = 0; x < path.length; x++) {
         let danger = eval("document.getElementById(" + path[x] + ")");
-        if (danger.getAttribute("value") == "brook") return false;
+        if (danger.getAttribute("value") == "brook") return path.slice(0,x);
     }
     path = knightmove(kingsplace);
     for (let x = 0; x < path.length; x++) {
         let danger = eval("document.getElementById(" + path[x] + ")");
-        if (danger.getAttribute("value") == "bknight") return false;
+        if (danger.getAttribute("value") == "bknight") return path.slice(0,x);
     }
     path = [parseInt(kingsplace) - 9, parseInt(kingsplace) - 11];
     for (let x = 0; x < path.length; x++) {
         let danger = eval("document.getElementById(" + path[x] + ")");
-        if (danger.getAttribute("value") == "bpawn") return false;
+        if (danger.getAttribute("value") == "bpawn") return path.slice(0,x);
     }
+    return true;
+}
+
+function bkingcheck() {
+    let king = document.querySelector(button[value = "wking"]);
+    let kingsplace = king.getAttribute("id");
+    let path = queenmove(kingsplace);
+    for (let x = 0; x < path.length; x++) {
+        let danger = eval("document.getElementById(" + path[x] + ")");
+        if (danger.getAttribute("value") == "wqueen") return path.slice(0,x);
+    }
+    path = bishopmove(kingsplace);
+    for (let x = 0; x < path.length; x++) {
+        let danger = eval("document.getElementById(" + path[x] + ")");
+        if (danger.getAttribute("value") == "wbishop") return path.slice(0,x);
+    }
+    path = rookmove(kingsplace);
+    for (let x = 0; x < path.length; x++) {
+        let danger = eval("document.getElementById(" + path[x] + ")");
+        if (danger.getAttribute("value") == "wrook") return path.slice(0,x);
+    }
+    path = knightmove(kingsplace);
+    for (let x = 0; x < path.length; x++) {
+        let danger = eval("document.getElementById(" + path[x] + ")");
+        if (danger.getAttribute("value") == "wknight") return path.slice(0,x);
+    }
+    path = [parseInt(kingsplace) + 9, parseInt(kingsplace) + 11];
+    for (let x = 0; x < path.length; x++) {
+        let danger = eval("document.getElementById(" + path[x] + ")");
+        if (danger.getAttribute("value") == "wpawn") return path.slice(0,x);
+    }
+    return 0;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var step = "white";
@@ -239,6 +270,8 @@ var type = "none";
 var ID = 0;
 var allowedboxes = [];
 var moved = false;
+let wkingsplace = document.getElementById("15");
+let bkingsplace = document.getElementById("85");
 var blocks = document.querySelectorAll(".blocks li button");
 for (let index = 0; index < blocks.length; index++) {
     blocks[index].addEventListener("click", function() {
@@ -249,25 +282,35 @@ for (let index = 0; index < blocks.length; index++) {
                     ID = this.getAttribute("id");
                     let allowedmoves = [];
                     allowedboxes = [];
-                    if (type === "wpawn") {
-                        step = "wmove";
-                        allowedmoves = wpawnmove(ID);
-                    } else if (type === "wrook") {
-                        step = "wmove";
-                        allowedmoves = rookmove(ID);
-                    } else if (type === "wbishop") {
-                        step = "wmove";
-                        allowedmoves = bishopmove(ID);
-                    } else if (type === "wknight") {
-                        step = "wmove";
-                        allowedmoves = knightmove(ID);
-                    } else if (type === "wking") {
-                        step = "wmove";
-                        allowedmoves = kingmove(ID);
-                    } else if (type === "wkween") {
-                        step = "wmove";
-                        allowedmoves = queenmove(ID);
+                    switch (type) {
+                        case "wpawn":
+                            step = "wmove";
+                            allowedmoves = wpawnmove(ID);
+                            break;
+                        case "wrook":
+                            step = "wmove";
+                            allowedmoves = rookmove(ID);
+                            break;
+                        case "wbishop":
+                            step = "wmove";
+                            allowedmoves = bishopmove(ID);
+                            break;
+                        case "wknight":
+                            step = "wmove";
+                            allowedmoves = knightmove(ID);
+                            break;
+                        case "wking":
+                            step = "wmove";
+                            allowedmoves = kingmove(ID);
+                            break;
+                        case "wkween":
+                            step = "wmove";
+                            allowedmoves = queenmove(ID);
+                            break;
+                        default:
+                            break;
                     }
+
                     for (let index = 0; index < allowedmoves.length; index++) {
                         let box = eval("document.getElementById(" + allowedmoves[index] + ")");
                         allowedboxes.push(box);
@@ -283,12 +326,30 @@ for (let index = 0; index < blocks.length; index++) {
                         allowedboxes[index].classList.remove("highlight");
                         let theID = allowedboxes[index].getAttribute("id");
                         if (oID == theID) {
+                            if (!wkingcheck()) {
+                                danger = wkingcheck();
+                                for (let x = 0; x < danger.length; x++) {
+                                    if (theID==danger[x]) {
+                                        if (oID == wkingsplace) wkingsplace = oID;
+                                        this.setAttribute("value", type);
+                                        let old = eval("document.getElementById(" + ID + ")");
+                                        old.setAttribute("value", "none");
+                                        step = "black";
+                                        moved = true;
+                                    }
+                                   else (alert("your king will die!")) 
+                                }
+                            }
+                            else {
+                            if (oID == wkingsplace) wkingsplace = oID;
                             this.setAttribute("value", type);
                             let old = eval("document.getElementById(" + ID + ")");
                             old.setAttribute("value", "none");
                             step = "black";
                             moved = true;
-                        } else if (!moved) step = "white";
+                            }
+                        } 
+                        else if (!moved) step = "white";
                     }
                 }
                 break;
@@ -298,24 +359,33 @@ for (let index = 0; index < blocks.length; index++) {
                     ID = this.getAttribute("id");
                     allowedmoves = [];
                     allowedboxes = [];
-                    if (type === "bpawn") {
-                        step = "bmove";
-                        allowedmoves = bpawnmove(ID);
-                    } else if (type === "brook") {
-                        step = "bmove";
-                        allowedmoves = rookmove(ID);
-                    } else if (type === "bbishop") {
-                        step = "bmove";
-                        allowedmoves = bishopmove(ID);
-                    } else if (type === "bknight") {
-                        step = "bmove";
-                        allowedmoves = knightmove(ID);
-                    } else if (type === "bking") {
-                        step = "bmove";
-                        allowedmoves = kingmove(ID);
-                    } else if (type === "bkween") {
-                        step = "bmove";
-                        allowedmoves = queenmove(ID);
+                    switch (type) {
+                        case "bpawn":
+                            step = "bmove";
+                            allowedmoves = bpawnmove(ID);
+                            break;
+                        case "brook":
+                            step = "bmove";
+                            allowedmoves = rookmove(ID);
+                            break;
+                        case "bbishop":
+                            step = "bmove";
+                            allowedmoves = bishopmove(ID);
+                            break;
+                        case "bknight":
+                            step = "bmove";
+                            allowedmoves = knightmove(ID);
+                            break;
+                        case "bking":
+                            step = "bmove";
+                            allowedmoves = kingmove(ID);
+                            break;
+                        case "bkween":
+                            step = "bmove";
+                            allowedmoves = queenmove(ID);
+                            break;
+                        default:
+                            break;
                     }
                     for (let index = 0; index < allowedmoves.length; index++) {
                         let box = eval("document.getElementById(" + allowedmoves[index] + ")");
@@ -332,13 +402,30 @@ for (let index = 0; index < blocks.length; index++) {
                         allowedboxes[index].classList.remove("highlight");
                         let theID = allowedboxes[index].getAttribute("id");
                         if (oID == theID) {
+                            if (!bkingcheck()) {
+                                danger = bkingcheck();
+                                for (let x = 0; x < danger.length; x++) {
+                                    if (theID==danger[x]) {
+                                        if (oID == bkingsplace) wkingsplace = oID;
+                                        this.setAttribute("value", type);
+                                        let old = eval("document.getElementById(" + ID + ")");
+                                        old.setAttribute("value", "none");
+                                        step = "white";
+                                        moved = true;
+                                    }
+                                   else (alert("your king will die!")) 
+                                }
+                            }
+                            else {
+                            if (oID == bkingsplace) wkingsplace = oID;
                             this.setAttribute("value", type);
                             let old = eval("document.getElementById(" + ID + ")");
                             old.setAttribute("value", "none");
                             step = "white";
                             moved = true;
-                        } else if (!moved) step = "black";
-
+                            }
+                        } 
+                        else if (!moved) step = "white";
                     }
                 }
                 break;
@@ -349,7 +436,7 @@ for (let index = 0; index < blocks.length; index++) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-// function rookmov(current) {
+// function rookmove(current) {
 //     var curr = parseInt(current);
 //     var nextid = [];
 //     var xa = current % 10;
