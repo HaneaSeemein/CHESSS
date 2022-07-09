@@ -11,13 +11,13 @@ function refine(rids) {
 function kill(id, curr) {
     let limit = eval("document.getElementById(" + id + ")");
     let current = eval("document.getElementById(" + curr + ")");
-    limitcolor = limit.getAttribute("value");
-    currentcolor = current.getAttribute("value");
-    colordest = limitcolor.charAt(0);
-    colorcurr = currentcolor.charAt(0);
+    colordest = limit.getAttribute("value").charAt(0);
+    colorcurr = current.getAttribute("value").charAt(0);
+    // colordest = limitcolor.charAt(0);
+    // colorcurr = currentcolor.charAt(0);
     if (colordest == 'n') return false;
     else if (colordest != colorcurr) {
-        if (limitcolor == "wking" || limitcolor == "bking") { alert("check") }
+        if (limitcolor == "wking" || limitcolor == "bking") { alert("died") }
         return true;
     } else return false;
 }
@@ -35,151 +35,72 @@ function valid(id, curr) {
 }
 
 
-function knightmove(current) {
-    var curr = parseInt(current);
-    var allnext = [12, 8, 21, 19];
+function knightmove(curr) {
+    // var curr = parseInt(current);
+    var allnext = [12, 8, 21, 19, -12, -8, -21, -19];
     var nid = [];
     var nextid = [];
     for (let index = 0; index < allnext.length; index++) {
         nid.push(curr + allnext[index]);
     }
-    for (let index = 0; index < allnext.length; index++) {
-        nid.push(curr - allnext[index]);
-    }
     nid = refine(nid);
-    for (let index = 0; index < nid.length; index++) {
-        if (valid(nid[index], curr) || kill(nid[index], curr)) { nextid.push(nid[index]); }
-    }
+    for (let index = 0; index < nid.length; index++) if (valid(nid[index], curr) || kill(nid[index], curr)) nextid.push(nid[index]);
     return nextid
 }
 
-function kingmove(current) {
-    var curr = parseInt(current);
-    var allnext = [1, 10, 11, 9];
+function kingmove(curr) {
+    // var curr = parseInt(current);
+    var allnext = [1, 10, 11, 9, -1, -10, -11, -9];
     var nid = [];
     var nextid = [];
     for (let index = 0; index < allnext.length; index++) nid.push(curr + allnext[index]);
-    for (let index = 0; index < allnext.length; index++) nid.push(curr - allnext[index]);
-
     nid = refine(nid);
-
-    for (let index = 0; index < nid.length; index++)
-        if (valid(nid[index], curr) || kill(nid[index], curr)) nextid.push(nid[index]);
-
+    for (let index = 0; index < nid.length; index++) if (valid(nid[index], curr) || kill(nid[index], curr)) nextid.push(nid[index]);
     return nextid
 }
 
-function queenmove(current) {
-    var curr = parseInt(current);
-    var nextid = bishopmove(current);
-    var curr = parseInt(current);
-    var ya = (parseInt(curr / 10)) * 10;
-    var temp = curr + 10;
-    while (temp < 89) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp + 10;
+function queenmove(curr) {
+    // var curr = parseInt(current);
+    var cross = bishopmove(curr);
+    var straight = rookmove(curr);
+    nextid = cross.concat(straight);
+    return nextid;
+}
+
+function bishopmove(curr) {
+    // var curr = parseInt(current);
+    var nextid = [];
+    var temparr = [9,11,-9,-11];
+    for (let x = 0; x < temparr.length; x++) {
+        var temp = curr+temparr[x];
+        while ((10 < temp) && (temp % 10 != 0) && (temp % 10 != 9) && (temp < 89)) {
+            if (kill(temp, curr)) nextid.push(temp);
+            if (valid(temp, curr)) nextid.push(temp);
+            else break;
+            temp = temp + temparr[x];
+        }     
     }
-    var temp = curr - 10;
-    while (temp > 10) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp - 10;
-    }
-    var temp = curr - 1;
-    while (temp > ya) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp - 1;
-    }
-    var temp = curr + 1;
-    while (temp < (ya + 9)) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp + 1;
+    return nextid
+}
+
+function rookmove(curr) {
+    // var curr = parseInt(current);
+    var nextid = [];
+    var temparr = [10,1,-10,-1];
+    for (let x = 0; x < temparr.length; x++) {
+        var temp = curr+temparr[x];
+        while ((10 < temp) && (temp % 10 != 0) && (temp % 10 != 9) && (temp < 89)) {
+            if (kill(temp, curr)) nextid.push(temp);
+            if (valid(temp, curr)) nextid.push(temp);
+            else break;
+            temp = temp + temparr[x];
+        }     
     }
     return nextid;
 }
 
-function bishopmove(current) {
-    var curr = parseInt(current);
-    var nextid = [];
-    var temp = curr + 9;
-    while ((10 < temp) && (temp % 10 != 0) && (temp % 10 != 9) && (temp < 89)) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp + 9;
-    }
-
-    var temp = curr + 11;
-    while ((temp % 10 != 0) && (temp % 10 != 9) && (temp < 89)) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp + 11;
-    }
-
-    var temp = curr - 9;
-    while ((10 < temp) && (temp % 10 != 0) && (temp % 10 != 9)) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp - 9;
-    }
-
-    var temp = curr - 11;
-    while ((10 < temp) && (temp % 10 != 0) && (temp % 10 != 9)) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp - 11;
-    }
-    nextid = refine(nextid);
-    return nextid
-}
-
-function rookmove(current) {
-    var curr = parseInt(current);
-    var nextid = [];
-    var ya = (parseInt(curr / 10)) * 10;
-    var temp = curr + 10;
-    while (temp < 89) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp + 10;
-    }
-    var temp = curr - 10;
-    while (temp > 10) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp - 10;
-    }
-    var temp = curr - 1;
-    while (temp > ya) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp - 1;
-    }
-    var temp = curr + 1;
-    while (temp < (ya + 9)) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp + 1;
-    }
-    return nextid;
-}
-
-function wpawnmove(current) {
-    var curr = parseInt(current);
+function wpawnmove(curr) {
+    // var curr = parseInt(current);
     var nextid = [];
     if (valid(curr + 10, curr)) nextid.push(curr + 10);
     if (parseInt(curr / 10) == 2 && (valid(curr + 20, curr))) nextid.push(curr + 20);
@@ -191,8 +112,8 @@ function wpawnmove(current) {
 }
 
 
-function bpawnmove(current) {
-    var curr = parseInt(current);
+function bpawnmove(curr) {
+    // var curr = parseInt(current);
     var nextid = [];
     if (valid(curr - 10, curr)) nextid.push(curr - 10);
     if (parseInt(curr / 10) == 7 && (valid(curr - 20, curr))) nextid.push(curr - 20);
@@ -204,65 +125,62 @@ function bpawnmove(current) {
 }
 
 function wkingcheck() {
-    let king = document.querySelector(button[value = "wking"]);
-    let kingsplace = king.getAttribute("id");
-    let path = queenmove(kingsplace);
+    wkingsid=wkingsplace.getAttribute("id");
+    path = queenmove(wkingsid);
     for (let x = 0; x < path.length; x++) {
         let danger = eval("document.getElementById(" + path[x] + ")");
-        if (danger.getAttribute("value") == "bqueen") return path.slice(0,x);
+        if (danger.getAttribute("value") == "bkween") return path.slice(0,x+1);
     }
-    path = bishopmove(kingsplace);
+    path = bishopmove(wkingsid);
     for (let x = 0; x < path.length; x++) {
         let danger = eval("document.getElementById(" + path[x] + ")");
-        if (danger.getAttribute("value") == "bbishop") return path.slice(0,x);
+        if (danger.getAttribute("value") == "bbishop") return path.slice(0,x+1);
     }
-    path = rookmove(kingsplace);
+    path = rookmove(wkingsid);
     for (let x = 0; x < path.length; x++) {
         let danger = eval("document.getElementById(" + path[x] + ")");
-        if (danger.getAttribute("value") == "brook") return path.slice(0,x);
+        if (danger.getAttribute("value") == "brook") return path.slice(0,x+1);
     }
-    path = knightmove(kingsplace);
+    path = knightmove(wkingsid);
     for (let x = 0; x < path.length; x++) {
         let danger = eval("document.getElementById(" + path[x] + ")");
-        if (danger.getAttribute("value") == "bknight") return path.slice(0,x);
+        if (danger.getAttribute("value") == "bknight") return path.slice(0,x+1);
     }
-    path = [parseInt(kingsplace) - 9, parseInt(kingsplace) - 11];
+    path = [parseInt(wkingsid) - 9, parseInt(wkingsid) - 11];
     for (let x = 0; x < path.length; x++) {
         let danger = eval("document.getElementById(" + path[x] + ")");
-        if (danger.getAttribute("value") == "bpawn") return path.slice(0,x);
+        // if (danger.getAttribute("value") == "bpawn") return path[x];
     }
-    return true;
+    return [];
 }
 
 function bkingcheck() {
-    let king = document.querySelector(button[value = "wking"]);
-    let kingsplace = king.getAttribute("id");
-    let path = queenmove(kingsplace);
+    let path = queenmove(bkingsplace);
     for (let x = 0; x < path.length; x++) {
         let danger = eval("document.getElementById(" + path[x] + ")");
-        if (danger.getAttribute("value") == "wqueen") return path.slice(0,x);
+        if (danger.getAttribute("value") == "wkween") return path.slice(0,x+1);
     }
-    path = bishopmove(kingsplace);
+    path = bishopmove(bkingsplace);
     for (let x = 0; x < path.length; x++) {
         let danger = eval("document.getElementById(" + path[x] + ")");
-        if (danger.getAttribute("value") == "wbishop") return path.slice(0,x);
+        if (danger.getAttribute("value") == "wbishop") return path.slice(0,x+1);
     }
-    path = rookmove(kingsplace);
+    path = rookmove(bkingsplace);
     for (let x = 0; x < path.length; x++) {
         let danger = eval("document.getElementById(" + path[x] + ")");
-        if (danger.getAttribute("value") == "wrook") return path.slice(0,x);
+        if (danger.getAttribute("value") == "wrook") return path.slice(0,x+1);
     }
-    path = knightmove(kingsplace);
+    path = knightmove(bkingsplace);
     for (let x = 0; x < path.length; x++) {
         let danger = eval("document.getElementById(" + path[x] + ")");
-        if (danger.getAttribute("value") == "wknight") return path.slice(0,x);
+        if (danger.getAttribute("value") == "wknight") return path.slice(0,x+1);
     }
-    path = [parseInt(kingsplace) + 9, parseInt(kingsplace) + 11];
+    path = [parseInt(bkingsplace) + 9, parseInt(bkingsplace) + 11];
     for (let x = 0; x < path.length; x++) {
         let danger = eval("document.getElementById(" + path[x] + ")");
-        if (danger.getAttribute("value") == "wpawn") return path.slice(0,x);
+        // if (danger.getAttribute("value") == "wpawn") return path[x];
     }
-    return 0;
+    return [];
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var step = "white";
@@ -280,32 +198,32 @@ for (let index = 0; index < blocks.length; index++) {
                 {
                     type = this.getAttribute("value");
                     ID = this.getAttribute("id");
-                    let allowedmoves = [];
+                    var allowedmoves = [];
                     allowedboxes = [];
                     switch (type) {
                         case "wpawn":
                             step = "wmove";
-                            allowedmoves = wpawnmove(ID);
+                            allowedmoves = wpawnmove(parseInt(ID));
                             break;
                         case "wrook":
                             step = "wmove";
-                            allowedmoves = rookmove(ID);
+                            allowedmoves = rookmove(parseInt(ID));
                             break;
                         case "wbishop":
                             step = "wmove";
-                            allowedmoves = bishopmove(ID);
+                            allowedmoves = bishopmove(parseInt(ID));
                             break;
                         case "wknight":
                             step = "wmove";
-                            allowedmoves = knightmove(ID);
+                            allowedmoves = knightmove(parseInt(ID));
                             break;
                         case "wking":
                             step = "wmove";
-                            allowedmoves = kingmove(ID);
+                            allowedmoves = kingmove(parseInt(ID));
                             break;
                         case "wkween":
                             step = "wmove";
-                            allowedmoves = queenmove(ID);
+                            allowedmoves = queenmove(parseInt(ID));
                             break;
                         default:
                             break;
@@ -321,27 +239,39 @@ for (let index = 0; index < blocks.length; index++) {
                 break;
             case "wmove":
                 {
-                    let oID = this.getAttribute("id");
+                    let currID = this.getAttribute("id");
                     for (let index = 0; index < allowedboxes.length; index++) {
                         allowedboxes[index].classList.remove("highlight");
                         let theID = allowedboxes[index].getAttribute("id");
-                        if (oID == theID) {
-                            if (!wkingcheck()) {
-                                danger = wkingcheck();
+                        if (currID == theID) {
+                            danger = wkingcheck();
+                            if (danger.length!=0) {
+                                alert(danger);
                                 for (let x = 0; x < danger.length; x++) {
                                     if (theID==danger[x]) {
-                                        if (oID == wkingsplace) wkingsplace = oID;
                                         this.setAttribute("value", type);
                                         let old = eval("document.getElementById(" + ID + ")");
                                         old.setAttribute("value", "none");
                                         step = "black";
                                         moved = true;
                                     }
-                                   else (alert("your king will die!")) 
+                                    // else if (ID == wkingsplace){ 
+                                    //     wkingsplace = currID;
+                                    //     //////////////////////////////////////////////kingrun
+                                    //     if (danger.includes(wkingsplace.getAttribute("id"))) {
+                                    //         /////////////////////////////////////////////
+                                    //     }else{
+                                    //         this.setAttribute("value", type);
+                                    //         let old = eval("document.getElementById(" + ID + ")");
+                                    //         old.setAttribute("value", "none");
+                                    //         step = "black";
+                                    //         moved = true;  
+                                    //     }
+                                    // }
+                                    // else (alert("your king will die!")) 
                                 }
-                            }
-                            else {
-                            if (oID == wkingsplace) wkingsplace = oID;
+                            }else {
+                            if (ID == wkingsplace) wkingsplace = currID;
                             this.setAttribute("value", type);
                             let old = eval("document.getElementById(" + ID + ")");
                             old.setAttribute("value", "none");
@@ -397,16 +327,16 @@ for (let index = 0; index < blocks.length; index++) {
                 break;
             case "bmove":
                 {
-                    let oID = this.getAttribute("id");
+                    let currID = this.getAttribute("id");
                     for (let index = 0; index < allowedboxes.length; index++) {
                         allowedboxes[index].classList.remove("highlight");
                         let theID = allowedboxes[index].getAttribute("id");
-                        if (oID == theID) {
-                            if (!bkingcheck()) {
-                                danger = bkingcheck();
+                        if (currID == theID) {
+                            danger = bkingcheck();
+                            if (danger.length!=0) {
                                 for (let x = 0; x < danger.length; x++) {
                                     if (theID==danger[x]) {
-                                        if (oID == bkingsplace) wkingsplace = oID;
+                                        if (currID == bkingsplace) wkingsplace = currID;
                                         this.setAttribute("value", type);
                                         let old = eval("document.getElementById(" + ID + ")");
                                         old.setAttribute("value", "none");
@@ -417,7 +347,7 @@ for (let index = 0; index < blocks.length; index++) {
                                 }
                             }
                             else {
-                            if (oID == bkingsplace) wkingsplace = oID;
+                            if (currID == bkingsplace) wkingsplace = currID;
                             this.setAttribute("value", type);
                             let old = eval("document.getElementById(" + ID + ")");
                             old.setAttribute("value", "none");
@@ -557,11 +487,11 @@ for (let index = 0; index < blocks.length; index++) {
 //         box.classList.add("highlight");
 //     }
 // } else if (step == "move") {
-//     let oID = this.getAttribute("id");
+//     let currID = this.getAttribute("id");
 //     for (let index = 0; index < allowedboxes.length; index++) {
 //         allowedboxes[index].classList.remove("highlight");
 //         let theID = allowedboxes[index].getAttribute("id");
-//         if (oID == theID) {
+//         if (currID == theID) {
 //             this.setAttribute("value", type);
 //             let old = eval("document.getElementById(" + ID + ")");
 //             old.setAttribute("value", "none");
