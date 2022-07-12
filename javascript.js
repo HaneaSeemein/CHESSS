@@ -7,181 +7,177 @@ function refine(rids) {
     }
     return solid
 }
-
-function kill(id, curr) {
+// function kingscheck(ids,color) {
+//     if (color=="w"&&wkingcheck()){
+//         danger = wkingcheck();
+//         alert(danger)
+//         return ids.filter(value => danger.includes(value));
+//     }     
+//     else if (color=="b"&&bkingcheck()){
+//         danger = bkingcheck();
+//         return ids.filter(value => danger.includes(value));
+//     }  
+//     else return ids   
+// }
+function kill(id, colorcurr) {
     let limit = eval("document.getElementById(" + id + ")");
-    let current = eval("document.getElementById(" + curr + ")");
+    // let current = eval("document.getElementById(" + curr + ")");
     colordest = limit.getAttribute("value").charAt(0);
-    colorcurr = current.getAttribute("value").charAt(0);
-    // colordest = limitcolor.charAt(0);
-    // colorcurr = currentcolor.charAt(0);
+    // colorcurr = current.getAttribute("value").charAt(0);
     if (colordest == 'n') return false;
     else if (colordest != colorcurr) {
-        if (limitcolor == "wking" || limitcolor == "bking") { alert("died") }
+        // if (limitcolor == "wking" || limitcolor == "bking") { alert("died") }
         return true;
     } else return false;
 }
 
-function valid(id, curr) {
+function valid(id, colorcurr) {
     let limit = eval("document.getElementById(" + id + ")");
-    let current = eval("document.getElementById(" + curr + ")");
-    limitcolor = limit.getAttribute("value");
-    currentcolor = current.getAttribute("value");
-    colordest = limitcolor.charAt(0);
-    colorcurr = currentcolor.charAt(0);
+    // let current = eval("document.getElementById(" + curr + ")");
+    colordest = limit.getAttribute("value").charAt(0);
+    // colorcurr = current.getAttribute("value").charAt(0);
     if (colordest == "n") return true;
-
     else if (colordest == colorcurr) return false;
 }
 
 
-function knightmove(curr) {
-    // var curr = parseInt(current);
+function knightmove(curr,color) {
     var allnext = [12, 8, 21, 19, -12, -8, -21, -19];
     var nid = [];
     var nextid = [];
-    for (let index = 0; index < allnext.length; index++) {
-        nid.push(curr + allnext[index]);
-    }
+    for (let index = 0; index < allnext.length; index++) nid.push(curr + allnext[index]);
     nid = refine(nid);
-    for (let index = 0; index < nid.length; index++) if (valid(nid[index], curr) || kill(nid[index], curr)) nextid.push(nid[index]);
+    for (let index = 0; index < nid.length; index++) if (valid(nid[index], color) || kill(nid[index], color)) nextid.push(nid[index]);
+    // nextid = kingscheck(nextid, color);
     return nextid
 }
 
-function kingmove(curr) {
-    // var curr = parseInt(current);
+function kingmove(curr,color) {
     var allnext = [1, 10, 11, 9, -1, -10, -11, -9];
     var nid = [];
     var nextid = [];
     for (let index = 0; index < allnext.length; index++) nid.push(curr + allnext[index]);
     nid = refine(nid);
-    for (let index = 0; index < nid.length; index++) if (valid(nid[index], curr) || kill(nid[index], curr)) nextid.push(nid[index]);
+    for (let index = 0; index < nid.length; index++) if (valid(nid[index], color) || kill(nid[index], color)) nextid.push(nid[index]);
+    // nextid = kingscheck(nextid, color);
     return nextid
 }
 
-function queenmove(curr) {
-    // var curr = parseInt(current);
+function queenmove(curr,color) {
     var cross = bishopmove(curr);
     var straight = rookmove(curr);
     nextid = cross.concat(straight);
+    // nextid = kingscheck(nextid, color);
     return nextid;
 }
 
-function bishopmove(curr) {
-    // var curr = parseInt(current);
+function bishopmove(curr,color) {
     var nextid = [];
     var temparr = [9,11,-9,-11];
     for (let x = 0; x < temparr.length; x++) {
         var temp = curr+temparr[x];
         while ((10 < temp) && (temp % 10 != 0) && (temp % 10 != 9) && (temp < 89)) {
-            if (kill(temp, curr)) nextid.push(temp);
-            if (valid(temp, curr)) nextid.push(temp);
+            if (kill(temp, color)) nextid.push(temp);
+            if (valid(temp, color)) nextid.push(temp);
             else break;
             temp = temp + temparr[x];
         }     
     }
+    nextid = kingscheck(nextid, color);
     return nextid
 }
 
-function rookmove(curr) {
-    // var curr = parseInt(current);
+function rookmove(curr,color) {
     var nextid = [];
     var temparr = [10,1,-10,-1];
     for (let x = 0; x < temparr.length; x++) {
         var temp = curr+temparr[x];
         while ((10 < temp) && (temp % 10 != 0) && (temp % 10 != 9) && (temp < 89)) {
-            if (kill(temp, curr)) nextid.push(temp);
-            if (valid(temp, curr)) nextid.push(temp);
+            if (kill(temp, color)) nextid.push(temp);
+            if (valid(temp, color)) nextid.push(temp);
             else break;
             temp = temp + temparr[x];
         }     
     }
+    nextid = kingscheck(nextid, color);
     return nextid;
 }
 
 function wpawnmove(curr) {
-    // var curr = parseInt(current);
     var nextid = [];
-    if (valid(curr + 10, curr)) nextid.push(curr + 10);
-    if (parseInt(curr / 10) == 2 && (valid(curr + 20, curr))) nextid.push(curr + 20);
-    if ((10 < (curr + 11)) && ((curr + 11) % 10 != 0) && ((curr + 11) % 10 != 9) && ((curr + 11) < 89))
-        if (kill((curr + 11), curr)) nextid.push(curr + 11);
-    if ((10 < (curr + 9)) && ((curr + 9) % 10 != 0) && ((curr + 9) % 10 != 9) && ((curr + 9) < 89))
-        if (kill((curr + 9), curr)) nextid.push(curr + 9);
+    color="w";
+    if (valid(curr + 10, color)) nextid.push(curr + 10);
+    if (parseInt(curr / 10) == 2 && (valid(curr + 20, color))) nextid.push(curr + 20);
+    if ((10 < (curr + 11)) && ((curr + 11) % 10 != 0) && ((curr + 11) % 10 != 9) && ((curr + 11) < 89))    if (kill((curr + 11), color)) nextid.push(curr + 11);
+    if ((10 < (curr + 9)) && ((curr + 9) % 10 != 0) && ((curr + 9) % 10 != 9) && ((curr + 9) < 89))     if (kill((curr + 9), color)) nextid.push(curr + 9);
+    nextid = kingscheck(nextid, color);
+    alert(nextid);
     return nextid
 }
-
 
 function bpawnmove(curr) {
-    // var curr = parseInt(current);
     var nextid = [];
-    if (valid(curr - 10, curr)) nextid.push(curr - 10);
-    if (parseInt(curr / 10) == 7 && (valid(curr - 20, curr))) nextid.push(curr - 20);
+    color ="b"
+    if (valid(curr - 10, color)) nextid.push(curr - 10);
+    if (parseInt(curr / 10) == 7 && (valid(curr - 20, color))) nextid.push(curr - 20);
     if ((10 < (curr - 11)) && ((curr - 11) % 10 != 0) && ((curr - 11) % 10 != 9) && ((curr - 11) < 89))
-        if (kill((curr - 11), curr)) nextid.push(curr - 11);
+        if (kill((curr - 11), color)) nextid.push(curr - 11);
     if ((10 < (curr - 9)) && ((curr - 9) % 10 != 0) && ((curr - 9) % 10 != 9) && ((curr - 9) < 89))
-        if (kill((curr - 9), curr)) nextid.push(curr - 9);
+        if (kill((curr - 9), color)) nextid.push(curr - 9);
+    nextid = kingscheck(nextid, color);
     return nextid
 }
 
-function wkingcheck() {
-    wkingsid=wkingsplace.getAttribute("id");
-    path = queenmove(wkingsid);
+function kingscheck(ids,color) {
+    if (color=='w') {
+        kingsid=wkingsplace.getAttribute("id");
+        queen = "bkween"        
+        bishop = "bbishop";
+        rook = "brook";
+        knight="bknight";
+        pawn="bpawn";
+    }
+    else if (color=='b'){
+        kingsid=bkingsplace.getAttribute("id");
+        queen = "wkween"
+        bishop = "wbishop";
+        rook = "wrook";
+        knight="wknight";
+        pawn="wpawn";
+    }
+    danger=[];
+    path = queenmove(kingsid);
     for (let x = 0; x < path.length; x++) {
         let danger = eval("document.getElementById(" + path[x] + ")");
-        if (danger.getAttribute("value") == "bkween") return path.slice(0,x+1);
+        if (danger.getAttribute("value") == queen) danger.push(path.slice(0,x+1));
     }
-    path = bishopmove(wkingsid);
+    path = bishopmove(kingsid);
     for (let x = 0; x < path.length; x++) {
         let danger = eval("document.getElementById(" + path[x] + ")");
-        if (danger.getAttribute("value") == "bbishop") return path.slice(0,x+1);
+        if (danger.getAttribute("value") == bishop) danger.push(path.slice(0,x+1));
     }
-    path = rookmove(wkingsid);
+    path = rookmove(kingsid);
     for (let x = 0; x < path.length; x++) {
         let danger = eval("document.getElementById(" + path[x] + ")");
-        if (danger.getAttribute("value") == "brook") return path.slice(0,x+1);
+        if (danger.getAttribute("value") == rook) danger.push(path.slice(0,x+1));
     }
-    path = knightmove(wkingsid);
+    path = knightmove(kingsid);
     for (let x = 0; x < path.length; x++) {
         let danger = eval("document.getElementById(" + path[x] + ")");
-        if (danger.getAttribute("value") == "bknight") return path.slice(0,x+1);
+        if (danger.getAttribute("value") == knight) danger.push(path.slice(0,x+1));
     }
-    path = [parseInt(wkingsid) - 9, parseInt(wkingsid) - 11];
+    path = [parseInt(kingsid) - 9, parseInt(kingsid) - 11];
     for (let x = 0; x < path.length; x++) {
         let danger = eval("document.getElementById(" + path[x] + ")");
-        // if (danger.getAttribute("value") == "bpawn") return path[x];
+        if (danger.getAttribute("value") == pawn) danger.push([path[x]]);
     }
-    return [];
+    if (danger.length > 0) {
+        return ids.filter(value => danger.includes(value));
+    } else {
+        return ids;
+    }
 }
 
-function bkingcheck() {
-    let path = queenmove(bkingsplace);
-    for (let x = 0; x < path.length; x++) {
-        let danger = eval("document.getElementById(" + path[x] + ")");
-        if (danger.getAttribute("value") == "wkween") return path.slice(0,x+1);
-    }
-    path = bishopmove(bkingsplace);
-    for (let x = 0; x < path.length; x++) {
-        let danger = eval("document.getElementById(" + path[x] + ")");
-        if (danger.getAttribute("value") == "wbishop") return path.slice(0,x+1);
-    }
-    path = rookmove(bkingsplace);
-    for (let x = 0; x < path.length; x++) {
-        let danger = eval("document.getElementById(" + path[x] + ")");
-        if (danger.getAttribute("value") == "wrook") return path.slice(0,x+1);
-    }
-    path = knightmove(bkingsplace);
-    for (let x = 0; x < path.length; x++) {
-        let danger = eval("document.getElementById(" + path[x] + ")");
-        if (danger.getAttribute("value") == "wknight") return path.slice(0,x+1);
-    }
-    path = [parseInt(bkingsplace) + 9, parseInt(bkingsplace) + 11];
-    for (let x = 0; x < path.length; x++) {
-        let danger = eval("document.getElementById(" + path[x] + ")");
-        // if (danger.getAttribute("value") == "wpawn") return path[x];
-    }
-    return [];
-}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var step = "white";
 var type = "none";
@@ -198,7 +194,7 @@ for (let index = 0; index < blocks.length; index++) {
                 {
                     type = this.getAttribute("value");
                     ID = this.getAttribute("id");
-                    var allowedmoves = [];
+                    allowedmoves = [];
                     allowedboxes = [];
                     switch (type) {
                         case "wpawn":
@@ -207,23 +203,23 @@ for (let index = 0; index < blocks.length; index++) {
                             break;
                         case "wrook":
                             step = "wmove";
-                            allowedmoves = rookmove(parseInt(ID));
+                            allowedmoves = rookmove(parseInt(ID),"w");
                             break;
                         case "wbishop":
                             step = "wmove";
-                            allowedmoves = bishopmove(parseInt(ID));
+                            allowedmoves = bishopmove(parseInt(ID),"w");
                             break;
                         case "wknight":
                             step = "wmove";
-                            allowedmoves = knightmove(parseInt(ID));
+                            allowedmoves = knightmove(parseInt(ID),"w");
                             break;
                         case "wking":
                             step = "wmove";
-                            allowedmoves = kingmove(parseInt(ID));
+                            allowedmoves = kingmove(parseInt(ID),"w");
                             break;
                         case "wkween":
                             step = "wmove";
-                            allowedmoves = queenmove(parseInt(ID));
+                            allowedmoves = queenmove(parseInt(ID),"w");
                             break;
                         default:
                             break;
@@ -238,51 +234,22 @@ for (let index = 0; index < blocks.length; index++) {
                 }
                 break;
             case "wmove":
-                {
-                    let currID = this.getAttribute("id");
-                    for (let index = 0; index < allowedboxes.length; index++) {
-                        allowedboxes[index].classList.remove("highlight");
-                        let theID = allowedboxes[index].getAttribute("id");
-                        if (currID == theID) {
-                            danger = wkingcheck();
-                            if (danger.length!=0) {
-                                alert(danger);
-                                for (let x = 0; x < danger.length; x++) {
-                                    if (theID==danger[x]) {
-                                        this.setAttribute("value", type);
-                                        let old = eval("document.getElementById(" + ID + ")");
-                                        old.setAttribute("value", "none");
-                                        step = "black";
-                                        moved = true;
-                                    }
-                                    // else if (ID == wkingsplace){ 
-                                    //     wkingsplace = currID;
-                                    //     //////////////////////////////////////////////kingrun
-                                    //     if (danger.includes(wkingsplace.getAttribute("id"))) {
-                                    //         /////////////////////////////////////////////
-                                    //     }else{
-                                    //         this.setAttribute("value", type);
-                                    //         let old = eval("document.getElementById(" + ID + ")");
-                                    //         old.setAttribute("value", "none");
-                                    //         step = "black";
-                                    //         moved = true;  
-                                    //     }
-                                    // }
-                                    // else (alert("your king will die!")) 
-                                }
-                            }else {
-                            if (ID == wkingsplace) wkingsplace = currID;
-                            this.setAttribute("value", type);
-                            let old = eval("document.getElementById(" + ID + ")");
-                            old.setAttribute("value", "none");
-                            step = "black";
-                            moved = true;
-                            }
-                        } 
-                        else if (!moved) step = "white";
+                    {
+                        let oID = this.getAttribute("id");
+                        for (let index = 0; index < allowedboxes.length; index++) {
+                            allowedboxes[index].classList.remove("highlight");
+                            let theID = allowedboxes[index].getAttribute("id");
+                            if (oID == theID) {
+                                this.setAttribute("value", type);
+                                let old = eval("document.getElementById(" + ID + ")");
+                                old.setAttribute("value", "none");
+                                step = "black";
+                                moved = true;
+                            } else if (!moved) step = "white";
+                        }
                     }
-                }
-                break;
+                    break;
+                    
             case "black":
                 {
                     type = this.getAttribute("value");
@@ -292,70 +259,52 @@ for (let index = 0; index < blocks.length; index++) {
                     switch (type) {
                         case "bpawn":
                             step = "bmove";
-                            allowedmoves = bpawnmove(ID);
+                            allowedmoves = bpawnmove(parseInt(ID));
                             break;
                         case "brook":
                             step = "bmove";
-                            allowedmoves = rookmove(ID);
+                            allowedmoves = rookmove(parseInt(ID));
                             break;
                         case "bbishop":
                             step = "bmove";
-                            allowedmoves = bishopmove(ID);
+                            allowedmoves = bishopmove(parseInt(ID));
                             break;
                         case "bknight":
                             step = "bmove";
-                            allowedmoves = knightmove(ID);
+                            allowedmoves = knightmove(parseInt(ID));
                             break;
                         case "bking":
                             step = "bmove";
-                            allowedmoves = kingmove(ID);
+                            allowedmoves = kingmove(parseInt(ID));
                             break;
                         case "bkween":
                             step = "bmove";
-                            allowedmoves = queenmove(ID);
+                            allowedmoves = queenmove(parseInt(ID));
                             break;
                         default:
                             break;
-                    }
+                            }
                     for (let index = 0; index < allowedmoves.length; index++) {
                         let box = eval("document.getElementById(" + allowedmoves[index] + ")");
                         allowedboxes.push(box);
                         box.classList.add("highlight");
-                        moved = false;
                     }
+                    moved = false;
                 }
                 break;
             case "bmove":
                 {
-                    let currID = this.getAttribute("id");
+                    let oID = this.getAttribute("id");
                     for (let index = 0; index < allowedboxes.length; index++) {
                         allowedboxes[index].classList.remove("highlight");
                         let theID = allowedboxes[index].getAttribute("id");
-                        if (currID == theID) {
-                            danger = bkingcheck();
-                            if (danger.length!=0) {
-                                for (let x = 0; x < danger.length; x++) {
-                                    if (theID==danger[x]) {
-                                        if (currID == bkingsplace) wkingsplace = currID;
-                                        this.setAttribute("value", type);
-                                        let old = eval("document.getElementById(" + ID + ")");
-                                        old.setAttribute("value", "none");
-                                        step = "white";
-                                        moved = true;
-                                    }
-                                   else (alert("your king will die!")) 
-                                }
-                            }
-                            else {
-                            if (currID == bkingsplace) wkingsplace = currID;
+                        if (oID == theID) {
                             this.setAttribute("value", type);
                             let old = eval("document.getElementById(" + ID + ")");
                             old.setAttribute("value", "none");
                             step = "white";
                             moved = true;
-                            }
-                        } 
-                        else if (!moved) step = "white";
+                        } else if (!moved) step = "black";
                     }
                 }
                 break;

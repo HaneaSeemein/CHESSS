@@ -8,13 +8,13 @@ function refine(rids) {
     return solid
 }
 
-function kill(id, curr) {
+function kill(id, colorcurr) {
     let limit = eval("document.getElementById(" + id + ")");
-    let current = eval("document.getElementById(" + curr + ")");
+    // let current = eval("document.getElementById(" + curr + ")");
     limitcolor = limit.getAttribute("value");
-    currentcolor = current.getAttribute("value");
+    // currentcolor = current.getAttribute("value");
     colordest = limitcolor.charAt(0);
-    colorcurr = currentcolor.charAt(0);
+    // colorcurr = currentcolor.charAt(0);
     if (colordest == 'n') return false;
     else if (colordest != colorcurr) {
         if (limitcolor == "wking" || limitcolor == "bking") { alert("check") }
@@ -22,165 +22,82 @@ function kill(id, curr) {
     } else return false;
 }
 
-function valid(id, curr) {
+function valid(id, colorcurr) {
     let limit = eval("document.getElementById(" + id + ")");
-    let current = eval("document.getElementById(" + curr + ")");
+    // let current = eval("document.getElementById(" + curr + ")");
     limitcolor = limit.getAttribute("value");
-    currentcolor = current.getAttribute("value");
+    // currentcolor = current.getAttribute("value");
     colordest = limitcolor.charAt(0);
-    colorcurr = currentcolor.charAt(0);
+    // colorcurr = currentcolor.charAt(0);
     if (colordest == "n") return true;
-
     else if (colordest == colorcurr) return false;
 }
 
-
-function knightmove(current) {
-    var curr = parseInt(current);
-    var allnext = [12, 8, 21, 19];
-    var nid = [];
-    var nextid = [];
-    for (let index = 0; index < allnext.length; index++) {
-        nid.push(curr + allnext[index]);
-    }
-    for (let index = 0; index < allnext.length; index++) {
-        nid.push(curr - allnext[index]);
-    }
-    nid = refine(nid);
-    for (let index = 0; index < nid.length; index++) {
-        if (valid(nid[index], curr) || kill(nid[index], curr)) { nextid.push(nid[index]); }
-    }
-    return nextid
-}
-
-function kingmove(current) {
-    var curr = parseInt(current);
-    var allnext = [1, 10, 11, 9];
+function knightmove(curr,color) {
+    var allnext = [12, 8, 21, 19, -12, -8, -21, -19];
     var nid = [];
     var nextid = [];
     for (let index = 0; index < allnext.length; index++) nid.push(curr + allnext[index]);
-
-    for (let index = 0; index < allnext.length; index++) nid.push(curr - allnext[index]);
     nid = refine(nid);
-
-    for (let index = 0; index < nid.length; index++)
-        if (valid(nid[index], curr) || kill(nid[index], curr)) nextid.push(nid[index]);
-
-
+    for (let index = 0; index < nid.length; index++) if (valid(nid[index], color) || kill(nid[index], color)) nextid.push(nid[index]);
+    // nextid = kingscheck(nextid, color);
     return nextid
 }
 
-function queenmove(current) {
-    var curr = parseInt(current);
-    var nextid = bishopmove(current);
-    var curr = parseInt(current);
-    var ya = (parseInt(curr / 10)) * 10;
-    var temp = curr + 10;
-    while (temp < 89) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp + 10;
-    }
-    var temp = curr - 10;
-    while (temp > 10) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp - 10;
-    }
-    var temp = curr - 1;
-    while (temp > ya) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp - 1;
-    }
-    var temp = curr + 1;
-    while (temp < (ya + 9)) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp + 1;
-    }
-    return nextid;
-}
-
-function bishopmove(current) {
-    var curr = parseInt(current);
+function kingmove(curr,color) {
+    var allnext = [1, 10, 11, 9, -1, -10, -11, -9];
+    var nid = [];
     var nextid = [];
-    var temp = curr + 9;
-    while ((10 < temp) && (temp % 10 != 0) && (temp % 10 != 9) && (temp < 89)) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp + 9;
-    }
-
-    var temp = curr + 11;
-    while ((temp % 10 != 0) && (temp % 10 != 9) && (temp < 89)) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp + 11;
-    }
-
-    var temp = curr - 9;
-    while ((10 < temp) && (temp % 10 != 0) && (temp % 10 != 9)) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp - 9;
-    }
-
-    var temp = curr - 11;
-    while ((10 < temp) && (temp % 10 != 0) && (temp % 10 != 9)) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp - 11;
-    }
-    nextid = refine(nextid);
+    for (let index = 0; index < allnext.length; index++) nid.push(curr + allnext[index]);
+    nid = refine(nid);
+    for (let index = 0; index < nid.length; index++) if (valid(nid[index], color) || kill(nid[index], color)) nextid.push(nid[index]);
+    // nextid = kingscheck(nextid, color);
     return nextid
 }
 
-function rookmove(current) {
-    var curr = parseInt(current);
-    var nextid = [];
-    var ya = (parseInt(curr / 10)) * 10;
-    var temp = curr + 10;
-    while (temp < 89) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp + 10;
-    }
-    var temp = curr - 10;
-    while (temp > 10) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp - 10;
-    }
-    var temp = curr - 1;
-    while (temp > ya) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp - 1;
-    }
-    var temp = curr + 1;
-    while (temp < (ya + 9)) {
-        if (kill(temp, curr)) nextid.push(temp);
-        if (valid(temp, curr)) nextid.push(temp);
-        else break;
-        temp = temp + 1;
-    }
+function queenmove(curr,color) {
+    var cross = bishopmove(curr,color);
+    var straight = rookmove(curr,color);
+    alert(straight);
+    nextid = cross.concat(straight);
+    // nextid = kingscheck(nextid, color);
     return nextid;
 }
 
-function wpawnmove(current) {
-    var curr = parseInt(current);
+function bishopmove(curr,color) {
+    var nextid = [];
+    var temparr = [9,11,-9,-11];
+    for (let x = 0; x < temparr.length; x++) {
+        var temp = curr+temparr[x];
+        while ((10 < temp) && (temp % 10 != 0) && (temp % 10 != 9) && (temp < 89)) {
+            if (kill(temp, color)) nextid.push(temp);
+            if (valid(temp, color)) nextid.push(temp);
+            else break;
+            temp = temp + temparr[x];
+        }     
+    }
+    // nextid = kingscheck(nextid, color);
+    return nextid
+}
+
+function rookmove(curr,color) {
+    var nextid = [];
+    var temparr = [10,1,-10,-1];
+    for (let x = 0; x < temparr.length; x++) {
+        var temp = curr+temparr[x];
+        while ((10 < temp) && (temp % 10 != 0) && (temp % 10 != 9) && (temp < 89)) {
+            if (kill(temp, color)) nextid.push(temp);
+            if (valid(temp, color)) nextid.push(temp);
+            else break;
+            temp = temp + temparr[x];
+        }     
+    }
+    // nextid = kingscheck(nextid, color);
+    return nextid;
+}
+
+function wpawnmove(curr) {
+    // var curr = parseInt(current);
     var nextid = [];
     if (valid(curr + 10, curr)) nextid.push(curr + 10);
     if (parseInt(curr / 10) == 2 && (valid(curr + 20, curr))) nextid.push(curr + 20);
@@ -191,9 +108,8 @@ function wpawnmove(current) {
     return nextid
 }
 
-
-function bpawnmove(current) {
-    var curr = parseInt(current);
+function bpawnmove(curr) {
+    // var curr = parseInt(current);
     var nextid = [];
     if (valid(curr - 10, curr)) nextid.push(curr - 10);
     if (parseInt(curr / 10) == 7 && (valid(curr - 20, curr))) nextid.push(curr - 20);
@@ -210,6 +126,10 @@ var ID = 0;
 var allowedboxes = [];
 var moved = false;
 var blocks = document.querySelectorAll(".blocks li button");
+// var path = [1,2,3,4,5,6,7,8,9,10];
+// var danger = [];
+// danger.push(path.slice(0, 3))
+// alert(danger);
 for (let index = 0; index < blocks.length; index++) {
     blocks[index].addEventListener("click", function() {
         switch (step) {
@@ -221,22 +141,22 @@ for (let index = 0; index < blocks.length; index++) {
                     allowedboxes = [];
                     if (type === "wpawn") {
                         step = "wmove";
-                        allowedmoves = wpawnmove(ID);
+                        allowedmoves = wpawnmove(parseInt(ID));
                     } else if (type === "wrook") {
                         step = "wmove";
-                        allowedmoves = rookmove(ID);
+                        allowedmoves = rookmove(parseInt(ID),"w");
                     } else if (type === "wbishop") {
                         step = "wmove";
-                        allowedmoves = bishopmove(ID);
+                        allowedmoves = bishopmove(parseInt(ID),"w");
                     } else if (type === "wknight") {
                         step = "wmove";
-                        allowedmoves = knightmove(ID);
+                        allowedmoves = knightmove(parseInt(ID),"w");
                     } else if (type === "wking") {
                         step = "wmove";
-                        allowedmoves = kingmove(ID);
+                        allowedmoves = kingmove(parseInt(ID),"w");
                     } else if (type === "wkween") {
                         step = "wmove";
-                        allowedmoves = queenmove(ID);
+                        allowedmoves = queenmove(parseInt(ID),"w");
                     }
                     for (let index = 0; index < allowedmoves.length; index++) {
                         let box = eval("document.getElementById(" + allowedmoves[index] + ")");
@@ -270,22 +190,22 @@ for (let index = 0; index < blocks.length; index++) {
                     allowedboxes = [];
                     if (type === "bpawn") {
                         step = "bmove";
-                        allowedmoves = bpawnmove(ID);
+                        allowedmoves = bpawnmove(parseInt(ID));
                     } else if (type === "brook") {
                         step = "bmove";
-                        allowedmoves = rookmove(ID);
+                        allowedmoves = rookmove(parseInt(ID),"b");
                     } else if (type === "bbishop") {
                         step = "bmove";
-                        allowedmoves = bishopmove(ID);
+                        allowedmoves = bishopmove(parseInt(ID),"b");
                     } else if (type === "bknight") {
                         step = "bmove";
-                        allowedmoves = knightmove(ID);
+                        allowedmoves = knightmove(parseInt(ID),"b");
                     } else if (type === "bking") {
                         step = "bmove";
-                        allowedmoves = kingmove(ID);
+                        allowedmoves = kingmove(parseInt(ID),"b");
                     } else if (type === "bkween") {
                         step = "bmove";
-                        allowedmoves = queenmove(ID);
+                        allowedmoves = queenmove(parseInt(ID),"b");
                     }
                     for (let index = 0; index < allowedmoves.length; index++) {
                         let box = eval("document.getElementById(" + allowedmoves[index] + ")");
