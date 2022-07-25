@@ -11,13 +11,11 @@ function refine(rids) {
 function kill(id, colorcurr) {
     let limit = eval("document.getElementById(" + id + ")");
     // let current = eval("document.getElementById(" + curr + ")");
-    limitcolor = limit.getAttribute("value");
-    // currentcolor = current.getAttribute("value");
-    colordest = limitcolor.charAt(0);
-    // colorcurr = currentcolor.charAt(0);
+    colordest = limit.getAttribute("value").charAt(0);
+    // colorcurr = current.getAttribute("value").charAt(0);
     if (colordest == 'n') return false;
     else if (colordest != colorcurr) {
-        if (limitcolor == "wking" || limitcolor == "bking") { alert("check") }
+        // if (limitcolor == "wking" || limitcolor == "bking") { alert("died") }
         return true;
     } else return false;
 }
@@ -25,13 +23,12 @@ function kill(id, colorcurr) {
 function valid(id, colorcurr) {
     let limit = eval("document.getElementById(" + id + ")");
     // let current = eval("document.getElementById(" + curr + ")");
-    limitcolor = limit.getAttribute("value");
-    // currentcolor = current.getAttribute("value");
-    colordest = limitcolor.charAt(0);
-    // colorcurr = currentcolor.charAt(0);
+    colordest = limit.getAttribute("value").charAt(0);
+    // colorcurr = current.getAttribute("value").charAt(0);
     if (colordest == "n") return true;
     else if (colordest == colorcurr) return false;
 }
+
 
 function knightmove(curr,color) {
     var allnext = [12, 8, 21, 19, -12, -8, -21, -19];
@@ -40,7 +37,7 @@ function knightmove(curr,color) {
     for (let index = 0; index < allnext.length; index++) nid.push(curr + allnext[index]);
     nid = refine(nid);
     for (let index = 0; index < nid.length; index++) if (valid(nid[index], color) || kill(nid[index], color)) nextid.push(nid[index]);
-    // nextid = kingscheck(nextid, color);
+    if(!disable) nextid = kingscheck(nextid, color);
     return nextid
 }
 
@@ -51,16 +48,16 @@ function kingmove(curr,color) {
     for (let index = 0; index < allnext.length; index++) nid.push(curr + allnext[index]);
     nid = refine(nid);
     for (let index = 0; index < nid.length; index++) if (valid(nid[index], color) || kill(nid[index], color)) nextid.push(nid[index]);
-    // nextid = kingscheck(nextid, color);
+    if(!disable) nextid = kingscheck(nextid, color);
     return nextid
 }
 
 function queenmove(curr,color) {
     var cross = bishopmove(curr,color);
     var straight = rookmove(curr,color);
-    alert(straight);
     nextid = cross.concat(straight);
-    // nextid = kingscheck(nextid, color);
+    if(!disable) nextid = kingscheck(nextid, color);
+    // else alert(nextid);
     return nextid;
 }
 
@@ -76,7 +73,7 @@ function bishopmove(curr,color) {
             temp = temp + temparr[x];
         }     
     }
-    // nextid = kingscheck(nextid, color);
+    if(!disable) nextid = kingscheck(nextid, color);
     return nextid
 }
 
@@ -92,44 +89,160 @@ function rookmove(curr,color) {
             temp = temp + temparr[x];
         }     
     }
-    // nextid = kingscheck(nextid, color);
+    if(!disable) nextid = kingscheck(nextid, color);
     return nextid;
 }
 
 function wpawnmove(curr) {
-    // var curr = parseInt(current);
     var nextid = [];
-    if (valid(curr + 10, curr)) nextid.push(curr + 10);
-    if (parseInt(curr / 10) == 2 && (valid(curr + 20, curr))) nextid.push(curr + 20);
-    if ((10 < (curr + 11)) && ((curr + 11) % 10 != 0) && ((curr + 11) % 10 != 9) && ((curr + 11) < 89))
-        if (kill((curr + 11), curr)) nextid.push(curr + 11);
-    if ((10 < (curr + 9)) && ((curr + 9) % 10 != 0) && ((curr + 9) % 10 != 9) && ((curr + 9) < 89))
-        if (kill((curr + 9), curr)) nextid.push(curr + 9);
+    color="w";
+    if (valid(curr + 10, color)) nextid.push(curr + 10);
+    if (parseInt(curr / 10) == 2 && (valid(curr + 20, color))) nextid.push(curr + 20);
+    if ((10 < (curr + 11)) && ((curr + 11) % 10 != 0) && ((curr + 11) % 10 != 9) && ((curr + 11) < 89))    if (kill((curr + 11), color)) nextid.push(curr + 11);
+    if ((10 < (curr + 9)) && ((curr + 9) % 10 != 0) && ((curr + 9) % 10 != 9) && ((curr + 9) < 89))     if (kill((curr + 9), color)) nextid.push(curr + 9);
+    if(!disable) nextid = kingscheck(nextid, color);
     return nextid
 }
 
 function bpawnmove(curr) {
-    // var curr = parseInt(current);
     var nextid = [];
-    if (valid(curr - 10, curr)) nextid.push(curr - 10);
-    if (parseInt(curr / 10) == 7 && (valid(curr - 20, curr))) nextid.push(curr - 20);
+    color ="b"
+    if (valid(curr - 10, color)) nextid.push(curr - 10);
+    if (parseInt(curr / 10) == 7 && (valid(curr - 20, color))) nextid.push(curr - 20);
     if ((10 < (curr - 11)) && ((curr - 11) % 10 != 0) && ((curr - 11) % 10 != 9) && ((curr - 11) < 89))
-        if (kill((curr - 11), curr)) nextid.push(curr - 11);
+        if (kill((curr - 11), color)) nextid.push(curr - 11);
     if ((10 < (curr - 9)) && ((curr - 9) % 10 != 0) && ((curr - 9) % 10 != 9) && ((curr - 9) < 89))
-        if (kill((curr - 9), curr)) nextid.push(curr - 9);
+        if (kill((curr - 9), color)) nextid.push(curr - 9);
+    if(!disable) nextid = kingscheck(nextid, color);
     return nextid
 }
+function kingscheck(ids,color) {
+    var path = [];
+    var queen,bishop,rook,knight,pawn='none';
+    var dangermoves = [];
+    if (color=='w') {
+        kingsid=wkingsplace.getAttribute("id");
+        queen = "bkween"        
+        bishop = "bbishop";
+        rook = "brook";
+        knight="bknight";
+        pawn="bpawn";
+    }
+    else if (color=='b'){
+        kingsid=bkingsplace.getAttribute("id");
+        queen = "wkween"
+        bishop = "wbishop";
+        rook = "wrook";
+        knight="wknight";
+        pawn="wpawn";
+    }
+    disable = true;
+    path = bishopmove(kingsid,color)
+    for (let x = 0; x < path.length; x++) {
+        let danger = eval("document.getElementById(" + path[x] + ")");
+        if (danger.getAttribute("value") == "bishop"||danger.getAttribute("value") =="queen") dangermoves.push(path.slice(0,x+1));
+    }
+    path = rookmove(kingsid,color)
+    for (let x = 0; x < path.length; x++) {
+        let danger = eval("document.getElementById(" + path[x] + ")");
+        if (danger.getAttribute("value") == "rook"||danger.getAttribute("value") =="queen") dangermoves.push(path.slice(0,x+1));
+    }
+    path = knightmove(kingsid,color)
+    for (let x = 0; x < path.length; x++) {
+        let danger = eval("document.getElementById(" + path[x] + ")");
+        if (danger.getAttribute("value") == "knight") dangermoves.push(path.slice(0,x+1));
+    }
+    path = [parseInt(kingsid,color) - 9, parseInt(kingsid,color) - 11]
+    for (let x = 0; x < path.length; x++) {
+        // let danger = eval("document.getElementById(" + path[x] + ")");
+        // if (danger.getAttribute("value") == pawn) dangermoves.push([path[x]]);
+    }
+    path = queenmove(kingsid,color);
+    for (let x = 0; x < path.length; x++) {
+        let danger = eval("document.getElementById(" + path[x] + ")");
+        if (danger.getAttribute("value") == queen) dangermoves.push(path.slice(0,x+1));
+    }
+    disable = false;
+    if (dangermoves.length > 0) {
+        ret = [];
+        dangermoves.forEach((d) =>{
+            ids.forEach((i)=>{
+                if (parseInt(i)==parseInt(d)) {
+                    ret.push(i);
+                }
+            })
+        })
+        return ret;}
+     else {
+        return ids;
+    }
+}
+// function kingscheck(ids,color) {
+//     // alert();
+//     var path = [];
+//     if (color=='w') {
+//         kingsid=wkingsplace.getAttribute("id");
+//         queen = "bkween"        
+//         bishop = "bbishop";
+//         rook = "brook";
+//         knight="bknight";
+//         pawn="bpawn";
+//     }
+//     else if (color=='b'){
+//         kingsid=bkingsplace.getAttribute("id");
+//         queen = "wkween"
+//         bishop = "wbishop";
+//         rook = "wrook";
+//         knight="wknight";
+//         pawn="wpawn";
+//     }
+//     disable = true;
+//     dangermoves=[];
+//         path = queenmove(kingsid,color);
+//         alert(path);
+//         for (let x = 0; x < path.length; x++) {
+//             let danger = eval("document.getElementById(" + path[x] + ")");
+//             if (danger.getAttribute("value") == queen) dangermoves.push(path.slice(0,x+1));
+//         }
+//         alert(dangermoves);
+//         path = bishopmove(kingsid,color)
+//         for (let x = 0; x < path.length; x++) {
+//             let danger = eval("document.getElementById(" + path[x] + ")");
+//             if (danger.getAttribute("value") == bishop) dangermoves.push(path.slice(0,x+1));
+//         }
+//         path = rookmove(kingsid,color)
+//         for (let x = 0; x < path.length; x++) {
+//             let danger = eval("document.getElementById(" + path[x] + ")");
+//             if (danger.getAttribute("value") == rook) dangermoves.push(path.slice(0,x+1));
+//         }
+//         path = knightmove(kingsid,color)
+//         for (let x = 0; x < path.length; x++) {
+//             let danger = eval("document.getElementById(" + path[x] + ")");
+//             if (danger.getAttribute("value") == knight) dangermoves.push(path.slice(0,x+1));
+//         }
+//         path = [parseInt(kingsid,color) - 9, parseInt(kingsid,color) - 11]
+//         for (let x = 0; x < path.length; x++) {
+//             // let danger = eval("document.getElementById(" + path[x] + ")");
+//             // if (danger.getAttribute("value") == pawn) dangermoves.push([path[x]]);
+//         }
+//     disable = false;
+//     if (dangermoves.length > 0) {
+//         return ids.filter(value => dangermoves.includes(value));
+//     } else {
+//         return ids;
+//     }
+// }
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var step = "white";
 var type = "none";
 var ID = 0;
 var allowedboxes = [];
 var moved = false;
+var disable = false;
+let wkingsplace = document.getElementById("15");
+let bkingsplace = document.getElementById("85");
 var blocks = document.querySelectorAll(".blocks li button");
-// var path = [1,2,3,4,5,6,7,8,9,10];
-// var danger = [];
-// danger.push(path.slice(0, 3))
-// alert(danger);
 for (let index = 0; index < blocks.length; index++) {
     blocks[index].addEventListener("click", function() {
         switch (step) {
@@ -137,27 +250,37 @@ for (let index = 0; index < blocks.length; index++) {
                 {
                     type = this.getAttribute("value");
                     ID = this.getAttribute("id");
-                    let allowedmoves = [];
+                    allowedmoves = [];
                     allowedboxes = [];
-                    if (type === "wpawn") {
-                        step = "wmove";
-                        allowedmoves = wpawnmove(parseInt(ID));
-                    } else if (type === "wrook") {
-                        step = "wmove";
-                        allowedmoves = rookmove(parseInt(ID),"w");
-                    } else if (type === "wbishop") {
-                        step = "wmove";
-                        allowedmoves = bishopmove(parseInt(ID),"w");
-                    } else if (type === "wknight") {
-                        step = "wmove";
-                        allowedmoves = knightmove(parseInt(ID),"w");
-                    } else if (type === "wking") {
-                        step = "wmove";
-                        allowedmoves = kingmove(parseInt(ID),"w");
-                    } else if (type === "wkween") {
-                        step = "wmove";
-                        allowedmoves = queenmove(parseInt(ID),"w");
+                    switch (type) {
+                        case "wpawn":
+                            step = "wmove";
+                            allowedmoves = wpawnmove(parseInt(ID));
+                            break;
+                        case "wrook":
+                            step = "wmove";
+                            allowedmoves = rookmove(parseInt(ID),"w");
+                            break;
+                        case "wbishop":
+                            step = "wmove";
+                            allowedmoves = bishopmove(parseInt(ID),"w");
+                            break;
+                        case "wknight":
+                            step = "wmove";
+                            allowedmoves = knightmove(parseInt(ID),"w");
+                            break;
+                        case "wking":
+                            step = "wmove";
+                            allowedmoves = kingmove(parseInt(ID),"w");
+                            break;
+                        case "wkween":
+                            step = "wmove";
+                            allowedmoves = queenmove(parseInt(ID),"w");
+                            break;
+                        default:
+                            break;
                     }
+
                     for (let index = 0; index < allowedmoves.length; index++) {
                         let box = eval("document.getElementById(" + allowedmoves[index] + ")");
                         allowedboxes.push(box);
@@ -167,52 +290,62 @@ for (let index = 0; index < blocks.length; index++) {
                 }
                 break;
             case "wmove":
-                {
-                    let oID = this.getAttribute("id");
-                    for (let index = 0; index < allowedboxes.length; index++) {
-                        allowedboxes[index].classList.remove("highlight");
-                        let theID = allowedboxes[index].getAttribute("id");
-                        if (oID == theID) {
-                            this.setAttribute("value", type);
-                            let old = eval("document.getElementById(" + ID + ")");
-                            old.setAttribute("value", "none");
-                            step = "black";
-                            moved = true;
-                        } else if (!moved) step = "white";
+                    {
+                        let oID = this.getAttribute("id");
+                        for (let index = 0; index < allowedboxes.length; index++) {
+                            allowedboxes[index].classList.remove("highlight");
+                            let theID = allowedboxes[index].getAttribute("id");
+                            if (oID == theID) {
+                                this.setAttribute("value", type);
+                                let old = eval("document.getElementById(" + ID + ")");
+                                old.setAttribute("value", "none");
+                                step = "black";
+                                moved = true;
+                            } else if (!moved) step = "white";
+                        }
                     }
-                }
-                break;
+                    break;
+                    
             case "black":
                 {
                     type = this.getAttribute("value");
                     ID = this.getAttribute("id");
                     allowedmoves = [];
                     allowedboxes = [];
-                    if (type === "bpawn") {
-                        step = "bmove";
-                        allowedmoves = bpawnmove(parseInt(ID));
-                    } else if (type === "brook") {
-                        step = "bmove";
-                        allowedmoves = rookmove(parseInt(ID),"b");
-                    } else if (type === "bbishop") {
-                        step = "bmove";
-                        allowedmoves = bishopmove(parseInt(ID),"b");
-                    } else if (type === "bknight") {
-                        step = "bmove";
-                        allowedmoves = knightmove(parseInt(ID),"b");
-                    } else if (type === "bking") {
-                        step = "bmove";
-                        allowedmoves = kingmove(parseInt(ID),"b");
-                    } else if (type === "bkween") {
-                        step = "bmove";
-                        allowedmoves = queenmove(parseInt(ID),"b");
-                    }
+                    switch (type) {
+                        case "bpawn":
+                            step = "bmove";
+                            allowedmoves = bpawnmove(parseInt(ID),'b');
+                            break;
+                        case "brook":
+                            step = "bmove";
+                            allowedmoves = rookmove(parseInt(ID),'b');
+                            break;
+                        case "bbishop":
+                            step = "bmove";
+                            allowedmoves = bishopmove(parseInt(ID),'b');
+                            break;
+                        case "bknight":
+                            step = "bmove";
+                            allowedmoves = knightmove(parseInt(ID),'b');
+                            break;
+                        case "bking":
+                            step = "bmove";
+                            allowedmoves = kingmove(parseInt(ID),'b');
+                            break;
+                        case "bkween":
+                            step = "bmove";
+                            allowedmoves = queenmove(parseInt(ID),'b');
+                            break;
+                        default:
+                            break;
+                            }
                     for (let index = 0; index < allowedmoves.length; index++) {
                         let box = eval("document.getElementById(" + allowedmoves[index] + ")");
                         allowedboxes.push(box);
                         box.classList.add("highlight");
-                        moved = false;
                     }
+                    moved = false;
                 }
                 break;
             case "bmove":
@@ -228,7 +361,6 @@ for (let index = 0; index < blocks.length; index++) {
                             step = "white";
                             moved = true;
                         } else if (!moved) step = "black";
-
                     }
                 }
                 break;
@@ -239,7 +371,7 @@ for (let index = 0; index < blocks.length; index++) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-// function rookmov(current) {
+// function rookmove(current) {
 //     var curr = parseInt(current);
 //     var nextid = [];
 //     var xa = current % 10;
@@ -360,11 +492,11 @@ for (let index = 0; index < blocks.length; index++) {
 //         box.classList.add("highlight");
 //     }
 // } else if (step == "move") {
-//     let oID = this.getAttribute("id");
+//     let currID = this.getAttribute("id");
 //     for (let index = 0; index < allowedboxes.length; index++) {
 //         allowedboxes[index].classList.remove("highlight");
 //         let theID = allowedboxes[index].getAttribute("id");
-//         if (oID == theID) {
+//         if (currID == theID) {
 //             this.setAttribute("value", type);
 //             let old = eval("document.getElementById(" + ID + ")");
 //             old.setAttribute("value", "none");

@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 // app.sendFile("base.html")
 app.get('/', function(req, res) {
-    res.sendFile(__dirname + "/base.html");
+    res.sendFile(__dirname + "/trial.html");
 });
 app.use('/', express.static(__dirname + "/public"));
 
