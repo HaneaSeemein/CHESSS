@@ -11,7 +11,7 @@ also excuse me for the commits
 2. node_modules are modules of node
 3. public folder bcs I used node and i am criminal and nobody can stop me
 4. base.html is the main page 
-5. bugs, I will treat you if you fix them(it's impossible, bcs nobody will/want to understand my badly structured code)
+5. bugs, I will treat you if you fix them (it's impossible, bcs nobody will/want to understand my badly structured code)
 6. icon.svg supposedly my bRaNdLoGo, you'll see it everywhere
 7. 0 dependencies, package.json
 8. .js file is where I had my fun
