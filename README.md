@@ -1,5 +1,6 @@
 # CHESS
 <sub>(extra 's' is only the repo name)</sub>
+
 most fun project, started loving coding after this
 
 also excuse me for the commits
