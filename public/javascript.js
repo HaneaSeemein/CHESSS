@@ -229,37 +229,44 @@ function kingscheck(ids, color) {
     if (danger.getAttribute("value") == knight) 
       dangermoves.push(path.slice(0, x + 1));
   }
-  // path = [parseInt(kingsid) - 9, parseInt(kingsid) - 11];
-  // for (let x = 0; x < path.length; x++) {
-  //   let danger = eval("document.getElementById(" + path[x] + ")");
-  //   if (danger.getAttribute("value") == pawn) dangermoves.push([path[x]]);
-  // }
-  // alert(dangermoves)
+  path = [parseInt(kingsid) - 9, parseInt(kingsid) - 11];
+  path = refine(path)
+  for (let x = 0; x < path.length; x++) {
+    let danger = eval("document.getElementById(" + path[x] + ")");
+    if (danger.getAttribute("value") == pawn) dangermoves.push([path[x]]);
+  }
+//////////////////////////////////////////////////////////////FAULTY////////////////////////////////////////
   if (dangermoves.length > 0) {
     ret = [];
+    // dangermoves.forEach((d) => {
+    //   ids.forEach((i) => {
+    //     if (parseInt(i) == parseInt(d)) {
+    //       ret.push(i);
+    //     }else if (kingturn){
+    //         alert(i);
+    //         ret.push(i);
+    //     }
+    //   });
+    // });
+    ////////////////////////////////////////
     for (x = 0; x < dangermoves.length; x++) {
-      ds = dangermoves[x];
-      alert(typeof(dangermoves[x]));
+      d = dangermoves[x];
       for (y = 0; y < ids.length; y++) {
-        // ids.forEach((i) => {
         i = ids[y];
+        d.forEach((ds) => {
         if (kingturn) {
-            if (parseInt(i) != parseInt(ds)) ret.push(i); 
-        }else{
-            alert(i+" "+ds);
+            if (parseInt(i) != parseInt(ds));
+            else ret.push(i); 
+        }else if(!kingturn){
             if (parseInt(i) == parseInt(ds)) ret.push(i);
         }
-        }
-    }
-    // dangermoves.forEach((d) => {
-    //   alert(d);
-    //   // d.forEach((ds)=>)
-    // });
-    // alert(ret);
+        })
+    }}
     return ret;
   } else {
     return ids;
   }
+////////////////////////////////////////////////////////////////////FAULTY/////////////////////////////////////
 }
 
 var step = "white", type = "none", ID = 0, moved = false, allowedboxes = [], blackwins=0, whitewins = 0,kingturn = false; 
@@ -324,7 +331,9 @@ for (let index = 0; index < blocks.length; index++) {
               let old = eval("document.getElementById(" + ID + ")");
               old.setAttribute("value", "none");
               step = "black";
-              moved = true;
+              if (allowedmoves.length>0) {
+                moved = true;
+              }
             } else if (!moved) step = "white";
           }
         }
@@ -385,7 +394,8 @@ for (let index = 0; index < blocks.length; index++) {
               let old = eval("document.getElementById(" + ID + ")");
               old.setAttribute("value", "none");
               step = "white";
-              moved = true;
+              if (allowedmoves.length>0) {
+              moved = true;}
             } else if (!moved) step = "black";
           }
         }
